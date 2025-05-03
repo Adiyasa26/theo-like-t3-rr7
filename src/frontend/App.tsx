@@ -16,45 +16,50 @@ import {
 import { TRPCReactProvider } from "~/trpc/react";
 import SignInPage from "./features/auth/sign-in";
 import SignUpPage from "./features/auth/sign-up";
+import { ConvexProvider, ConvexReactClient } from "convex/react";
+
+const convex = new ConvexReactClient(env.NEXT_PUBLIC_CONVEX_URL);
 
 export default function App() {
   return (
     <ErrorBoundary fallbackRender={(props) => <ErrorPage {...props} />}>
       <BrowserRouter>
-        <ClerkProvider
-          publishableKey={env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-          signInUrl="/sign-in"
-          signUpUrl="/sign-up"
-        >
-          <TRPCReactProvider>
-            <Routes>
-              <Route
-                element={
-                  <div className="h-screen">
-                    <header className="sticky top-0 flex h-10 w-screen items-center justify-end px-4">
-                      <SignedIn>
-                        <UserButton />
-                      </SignedIn>
-                      <SignedOut>
-                        <SignInButton />
-                      </SignedOut>
-                    </header>
+        <ConvexProvider client={convex}>
+          <ClerkProvider
+            publishableKey={env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+            signInUrl="/sign-in"
+            signUpUrl="/sign-up"
+          >
+            <TRPCReactProvider>
+              <Routes>
+                <Route
+                  element={
+                    <div className="h-screen">
+                      <header className="sticky top-0 flex h-10 w-screen items-center justify-end px-4">
+                        <SignedIn>
+                          <UserButton />
+                        </SignedIn>
+                        <SignedOut>
+                          <SignInButton />
+                        </SignedOut>
+                      </header>
 
-                    <Outlet />
-                  </div>
-                }
-              >
-                <Route path="/sign-in" element={<SignInPage />} />
-                <Route path="/sign-up" element={<SignUpPage />} />
+                      <Outlet />
+                    </div>
+                  }
+                >
+                  <Route path="/sign-in" element={<SignInPage />} />
+                  <Route path="/sign-up" element={<SignUpPage />} />
 
-                <Route path="/" element={<Navigate to="/home" />} />
-                <Route path="/home" element={<HomePage />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="" element={<NotFound />} />
-              </Route>
-            </Routes>
-          </TRPCReactProvider>
-        </ClerkProvider>
+                  <Route path="/" element={<Navigate to="/home" />} />
+                  <Route path="/home" element={<HomePage />} />
+                  <Route path="/about" element={<AboutPage />} />
+                  <Route path="" element={<NotFound />} />
+                </Route>
+              </Routes>
+            </TRPCReactProvider>
+          </ClerkProvider>
+        </ConvexProvider>
       </BrowserRouter>
     </ErrorBoundary>
   );
